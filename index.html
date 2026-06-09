@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Certified Architect &mdash; Practice Examination</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #f5f1e8;
+  color: #1a1a1a;
+  font-family: "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #d8d2c4;
+  border-radius: 4px;
+  padding: 40px 48px;
+  box-shadow: 0 2px 18px rgba(70, 60, 40, 0.08);
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #1d4e89;
+}
+.brand-title {
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #1d4e89;
+  margin: 0 0 6px 0;
+}
+.brand-sub {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0;
+  color: #111;
+}
+.brand-meta {
+  margin: 10px 0 0 0;
+  font-size: 12px;
+  color: #777;
+  letter-spacing: 0.4px;
+}
+.brand-meta .sep { margin: 0 8px; color: #bbb; }
+.brand-meta .author { color: #1d4e89; font-weight: 500; }
+
+h1 { font-size: 26px; margin: 0 0 6px 0; }
+h2 { font-size: 20px; margin: 24px 0 12px 0; color: #1d4e89; }
+p  { margin: 0 0 12px 0; }
+
+/* ============ HOME ============ */
+.intro { font-style: italic; color: #444; margin-bottom: 28px; font-size: 15px; }
+
+.section-list { list-style: none; padding: 0; margin: 0; }
+.section-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 16px;
+  border-bottom: 1px solid #ece7da;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.section-row:hover { background: #fbf8f1; }
+.section-row:first-child { border-top: 1px solid #ece7da; }
+.section-row.final { background: #f3eeda; border-top: 2px solid #1d4e89; border-bottom: 2px solid #1d4e89; margin-top: 6px; }
+.section-row.final:hover { background: #ebe3c7; }
+
+.section-num {
+  font-size: 22px;
+  font-weight: bold;
+  color: #1d4e89;
+  width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.section-info { flex: 1; min-width: 0; }
+.section-title { font-size: 17px; font-weight: bold; margin: 0 0 4px 0; }
+.section-domain { font-size: 13px; color: #666; font-style: italic; margin: 0; }
+.section-meta {
+  text-align: right;
+  font-size: 13px;
+  color: #666;
+  flex-shrink: 0;
+  min-width: 100px;
+}
+.section-meta .best { display: block; font-weight: bold; color: #1d4e89; font-size: 15px; }
+
+.home-footer {
+  text-align: center;
+  margin-top: 36px;
+  font-size: 13px;
+  color: #888;
+}
+.home-footer a {
+  color: #a05050;
+  text-decoration: none;
+  border-bottom: 1px dotted #a05050;
+  cursor: pointer;
+}
+.home-footer a:hover { color: #802020; border-bottom-color: #802020; }
+
+/* ============ QUESTION ============ */
+.q-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #ddd;
+}
+.q-section-name { font-size: 14px; color: #1d4e89; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; }
+.q-progress { font-size: 14px; color: #555; }
+
+.scenario-box {
+  background: #faf6e8;
+  border-left: 4px solid #1d4e89;
+  padding: 14px 18px;
+  margin-bottom: 22px;
+  border-radius: 2px;
+}
+.scenario-title { font-weight: bold; margin: 0 0 6px 0; font-size: 15px; color: #1d4e89; }
+.scenario-body  { margin: 0; font-size: 15px; color: #333; }
+
+.q-stem {
+  font-size: 18px;
+  line-height: 1.55;
+  margin-bottom: 24px;
+  color: #111;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.choice {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 1.5px solid #cfc8b8;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1.5;
+  transition: border-color 0.12s, background 0.12s;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+  color: #1a1a1a;
+}
+.choice:hover:not(.locked) { border-color: #1d4e89; background: #f7f4ec; }
+.choice.selected { border-color: #1d4e89; background: #eaf0f7; }
+.choice.correct { border-color: #2d7a3d; background: #e8f3ea; color: #1f5a2c; }
+.choice.incorrect { border-color: #a83030; background: #f6e6e4; color: #7a1a1a; }
+.choice.locked { cursor: default; }
+.choice-letter {
+  font-weight: bold;
+  font-size: 17px;
+  flex-shrink: 0;
+  width: 24px;
+  color: #1d4e89;
+}
+.choice.correct .choice-letter { color: #2d7a3d; }
+.choice.incorrect .choice-letter { color: #a83030; }
+.choice-text { flex: 1; }
+.choice code { font-size: 0.9em; background: #f0eddf; padding: 1px 5px; border-radius: 2px; font-family: "Consolas", "Courier New", monospace; }
+
+.feedback {
+  margin-top: 22px;
+  padding: 18px 20px;
+  border-radius: 4px;
+  font-size: 15px;
+  line-height: 1.6;
+  display: none;
+}
+.feedback.show { display: block; }
+.feedback.correct { background: #e8f3ea; border-left: 4px solid #2d7a3d; }
+.feedback.incorrect { background: #f6e6e4; border-left: 4px solid #a83030; }
+.feedback-label { font-weight: bold; margin-bottom: 6px; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
+.feedback.correct .feedback-label { color: #2d7a3d; }
+.feedback.incorrect .feedback-label { color: #a83030; }
+.feedback code { font-size: 0.9em; background: #fff; padding: 1px 5px; border-radius: 2px; font-family: "Consolas", "Courier New", monospace; }
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+
+.btn {
+  font-family: inherit;
+  font-size: 15px;
+  padding: 11px 28px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: 1.5px solid #1d4e89;
+  background: #1d4e89;
+  color: #fff;
+  transition: background 0.15s, border-color 0.15s;
+  letter-spacing: 0.3px;
+}
+.btn:hover { background: #163d6b; border-color: #163d6b; }
+.btn:disabled { background: #b8b8b8; border-color: #b8b8b8; cursor: not-allowed; }
+.btn.secondary { background: transparent; color: #1d4e89; }
+.btn.secondary:hover { background: #eaf0f7; color: #163d6b; }
+.btn.danger { background: transparent; color: #a05050; border-color: #a05050; }
+.btn.danger:hover { background: #f6e6e4; }
+
+.kbd-hint {
+  font-size: 12px;
+  color: #888;
+  font-style: italic;
+}
+
+/* ============ RESULTS ============ */
+.result-summary {
+  text-align: center;
+  padding: 28px 0 32px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 28px;
+}
+.result-score { font-size: 56px; font-weight: bold; color: #1d4e89; line-height: 1; margin: 0 0 8px 0; }
+.result-score .total { color: #888; }
+.result-pct { font-size: 18px; color: #555; margin: 0 0 14px 0; }
+.result-status { font-size: 17px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
+.result-status.pass { color: #2d7a3d; }
+.result-status.fail { color: #a83030; }
+
+.review-list { margin-top: 8px; }
+.review-item {
+  border-bottom: 1px solid #eee;
+  padding: 16px 4px;
+}
+.review-item:last-child { border-bottom: none; }
+.review-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+.review-q-num { font-weight: bold; color: #1d4e89; font-size: 15px; }
+.review-marker { font-size: 13px; font-weight: bold; letter-spacing: 0.5px; }
+.review-marker.correct { color: #2d7a3d; }
+.review-marker.incorrect { color: #a83030; }
+.review-marker.skipped { color: #888; }
+.review-body { margin-top: 6px; padding-left: 4px; font-size: 14px; line-height: 1.55; }
+.review-stem { margin: 0 0 8px 0; color: #333; font-size: 14px; }
+.review-line { margin: 4px 0; }
+.review-line .label { font-weight: bold; color: #555; display: inline-block; min-width: 96px; }
+.review-line code { font-size: 0.9em; background: #f0eddf; padding: 1px 4px; border-radius: 2px; }
+.review-rationale { margin-top: 8px; padding: 10px 14px; background: #faf6e8; border-left: 3px solid #1d4e89; font-size: 14px; }
+
+/* ============ STATUS BAR (timers + score) ============ */
+.status-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 10px 14px;
+  margin: -40px -48px 24px -48px;
+  background: #ffffff;
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.stat { display: flex; flex-direction: column; align-items: center; }
+.stat-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #888;
+}
+.stat-value {
+  font-size: 20px;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  color: #1d4e89;
+}
+.stat-value.over { color: #a83030; }
+.stat.correct .stat-value { color: #2d7a3d; }
+.stat.wrong   .stat-value { color: #a83030; }
+
+@media (max-width: 720px) {
+  .card { padding: 24px 20px; }
+  .brand-sub { font-size: 22px; }
+  .q-stem { font-size: 17px; }
+  .choice { font-size: 15px; padding: 12px 14px; }
+  .section-row { flex-wrap: wrap; }
+  .section-meta { width: 100%; text-align: left; min-width: 0; padding-left: 60px; }
+  .status-bar { margin: -24px -20px 18px -20px; padding: 8px 10px; }
+  .stat-value { font-size: 17px; }
+  .stat-label { font-size: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="card" id="root"></div>
+</div>
+
+<script src="questions.js"></script>
+<script>
+// =================== STATE ===================
+const STORAGE_KEY = "architect-foundations-light";
+const PASS_THRESHOLD = 0.7;       // tests: 7/10
+const FULL_EXAM_PASS = 36;        // 36/50 = 720/1000 per full-exam-01.md
+const SECONDS_PER_QUESTION = 90;  // 60 Q / 90 min == 1.5 min/Q
+const APP_AUTHOR = "Wilepana, Ronnachai";
+const APP_VERSION = "2026-06-04";
+
+const state = {
+  view: "home",
+  sectionIdx: -1,
+  questions: [],
+  qIdx: 0,
+  answers: [],
+  submitted: false,
+  selectedDisplayIdx: -1,
+  sessionStart: 0,
+  questionStart: 0,
+  questionFrozenMs: 0,
+  timerHandle: 0,
+};
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { sections: {} };
+}
+
+function saveProgress(sectionId, score, total) {
+  const p = loadProgress();
+  const cur = p.sections[sectionId] || { bestScore: 0, total: total, attempts: 0 };
+  cur.attempts = (cur.attempts || 0) + 1;
+  cur.total = total;
+  if (score > cur.bestScore) cur.bestScore = score;
+  cur.lastTaken = new Date().toISOString();
+  p.sections[sectionId] = cur;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+}
+
+function resetProgress() {
+  if (!confirm("Reset all examination progress? This will erase your best scores. This cannot be undone.")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  render();
+}
+
+// =================== UTILITIES ===================
+function esc(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function mdInline(s) {
+  let out = esc(s);
+  out = out.replace(/`([^`]+)`/g, (_, t) => `<code>${t}</code>`);
+  out = out.replace(/\*\*([^*]+)\*\*/g, (_, t) => `<strong>${t}</strong>`);
+  return out;
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function prepareSession(section) {
+  const baseQs = section.questions.slice();
+  const ordered = shuffle(baseQs);
+  return ordered.map(q => {
+    const letters = ["A", "B", "C", "D"].filter(L => q.choices[L] !== undefined);
+    const displayOrder = shuffle(letters);
+    return { ref: q, displayOrder };
+  });
+}
+
+function findScenario(section, qNum) {
+  if (!section.scenarios) return null;
+  return section.scenarios.find(s => s.questionNums.includes(qNum)) || null;
+}
+
+// =================== TIMERS / SCORE ===================
+function fmtClock(secSigned) {
+  const neg = secSigned < 0;
+  const s = Math.abs(secSigned) | 0;
+  const m = (s / 60) | 0;
+  const ss = (s % 60).toString().padStart(2, "0");
+  return (neg ? "-" : "") + m + ":" + ss;
+}
+
+function tickTimers() {
+  const sec = ALL_QUESTIONS.sections[state.sectionIdx];
+  if (!sec) return;
+  const elS = document.getElementById("stat-session");
+  if (!elS) return;
+  const elQ = document.getElementById("stat-question");
+  const elC = document.getElementById("stat-correct");
+  const elW = document.getElementById("stat-wrong");
+
+  const now = Date.now();
+  const sessionBudget = sec.questions.length * SECONDS_PER_QUESTION;
+  const sessionRemaining = sessionBudget - Math.floor((now - state.sessionStart) / 1000);
+
+  const qElapsedMs = state.submitted ? state.questionFrozenMs : (now - state.questionStart);
+  const qRemaining = SECONDS_PER_QUESTION - Math.floor(qElapsedMs / 1000);
+
+  const correct = state.answers.filter(a => a.isCorrect).length;
+  const wrong = state.answers.length - correct;
+
+  elS.textContent = fmtClock(sessionRemaining);
+  elS.classList.toggle("over", sessionRemaining < 0);
+  elQ.textContent = fmtClock(qRemaining);
+  elQ.classList.toggle("over", qRemaining < 0);
+  elC.textContent = String(correct);
+  elW.textContent = String(wrong);
+}
+
+function stopTimer() {
+  if (state.timerHandle) {
+    clearInterval(state.timerHandle);
+    state.timerHandle = 0;
+  }
+}
+
+// =================== HOME ===================
+function showAllSections() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("full") === "true";
+}
+
+function renderHome() {
+  const progress = loadProgress();
+  const sections = ALL_QUESTIONS.sections;
+  const showAll = showAllSections();
+
+  const visible = sections
+    .map((sec, i) => ({ sec, i }))
+    .filter(({ sec }) => showAll || sec.type === "fullExam");
+
+  const rows = visible.map(({ sec, i }) => {
+    const stored = progress.sections[sec.id];
+    const total = sec.questions.length;
+    const isFinal = sec.type === "fullExam";
+    const num = isFinal ? "&#9733;" : String(i + 1);
+    const meta = stored
+      ? `<span class="best">Best: ${stored.bestScore}/${total}</span><span>${stored.attempts} attempt${stored.attempts === 1 ? "" : "s"}</span>`
+      : `<span>${total} questions</span>`;
+    return `
+      <li class="section-row${isFinal ? " final" : ""}" data-idx="${i}">
+        <div class="section-num">${num}</div>
+        <div class="section-info">
+          <p class="section-title">${esc(sec.title)}</p>
+          <p class="section-domain">${esc(sec.domain)}</p>
+        </div>
+        <div class="section-meta">${meta}</div>
+      </li>`;
+  }).join("");
+
+  document.getElementById("root").innerHTML = `
+    <header class="brand">
+      <p class="brand-title">Claude Certified Architect &mdash; Foundations</p>
+      <h1 class="brand-sub">Practice Examination</h1>
+      <p class="brand-meta">By <span class="author">${esc(APP_AUTHOR)}</span><span class="sep">&middot;</span>Version ${esc(APP_VERSION)}</p>
+    </header>
+    <p class="intro">Select an examination below. Each Practice Test contains 10 questions; the Full Practice Exam contains all 50 questions across six scenarios. Best scores are saved locally in your browser.</p>
+    <ul class="section-list">${rows}</ul>
+    <p class="home-footer"><a id="reset-link">Reset all progress</a></p>
+  `;
+
+  document.querySelectorAll(".section-row").forEach(row => {
+    row.addEventListener("click", () => startSection(parseInt(row.dataset.idx, 10)));
+  });
+  document.getElementById("reset-link").addEventListener("click", resetProgress);
+}
+
+// =================== START SECTION ===================
+function startSection(idx) {
+  state.view = "question";
+  state.sectionIdx = idx;
+  const sec = ALL_QUESTIONS.sections[idx];
+  state.questions = prepareSession(sec);
+  state.qIdx = 0;
+  state.answers = [];
+  state.submitted = false;
+  state.selectedDisplayIdx = -1;
+  const now = Date.now();
+  state.sessionStart = now;
+  state.questionStart = now;
+  state.questionFrozenMs = 0;
+  stopTimer();
+  state.timerHandle = setInterval(tickTimers, 1000);
+  render();
+}
+
+// =================== QUESTION VIEW ===================
+function renderQuestion() {
+  const sec = ALL_QUESTIONS.sections[state.sectionIdx];
+  const item = state.questions[state.qIdx];
+  const q = item.ref;
+  const total = state.questions.length;
+
+  let scenarioHtml = "";
+  if (sec.type === "fullExam") {
+    const sc = findScenario(sec, q.n);
+    if (sc) {
+      const bodyHtml = sc.body ? `<p class="scenario-body">${mdInline(sc.body)}</p>` : "";
+      scenarioHtml = `
+        <div class="scenario-box">
+          <p class="scenario-title">${esc(sc.title)}</p>
+          ${bodyHtml}
+        </div>`;
+    }
+  }
+
+  const labels = ["A", "B", "C", "D"];
+  const choicesHtml = item.displayOrder.map((origLetter, i) => {
+    const text = q.choices[origLetter];
+    let cls = "choice";
+    if (state.submitted) {
+      cls += " locked";
+      if (origLetter === q.answer) cls += " correct";
+      else if (i === state.selectedDisplayIdx) cls += " incorrect";
+    } else if (i === state.selectedDisplayIdx) {
+      cls += " selected";
+    }
+    return `
+      <button class="${cls}" data-idx="${i}" type="button">
+        <span class="choice-letter">${labels[i]})</span>
+        <span class="choice-text">${mdInline(text)}</span>
+      </button>`;
+  }).join("");
+
+  let feedbackHtml = "";
+  if (state.submitted) {
+    const last = state.answers[state.answers.length - 1];
+    const correctDisplayIdx = item.displayOrder.indexOf(q.answer);
+    const correctLabel = labels[correctDisplayIdx];
+    feedbackHtml = `
+      <div class="feedback show ${last.isCorrect ? "correct" : "incorrect"}">
+        <div class="feedback-label">${last.isCorrect ? "Correct" : "Incorrect"} &middot; Answer: ${correctLabel})</div>
+        <div>${mdInline(q.rationale)}</div>
+      </div>`;
+  }
+
+  const isLast = state.qIdx === state.questions.length - 1;
+  const primaryLabel = !state.submitted ? "Submit Answer" : (isLast ? "See Results" : "Next Question");
+  const primaryDisabled = !state.submitted && state.selectedDisplayIdx < 0;
+
+  document.getElementById("root").innerHTML = `
+    <div class="status-bar" id="status-bar">
+      <div class="stat session"><span class="stat-label">Session</span><span class="stat-value" id="stat-session">--:--</span></div>
+      <div class="stat question"><span class="stat-label">Question</span><span class="stat-value" id="stat-question">--:--</span></div>
+      <div class="stat correct"><span class="stat-label">Correct</span><span class="stat-value" id="stat-correct">0</span></div>
+      <div class="stat wrong"><span class="stat-label">Wrong</span><span class="stat-value" id="stat-wrong">0</span></div>
+    </div>
+    <div class="q-header">
+      <div class="q-section-name">${esc(sec.title)}</div>
+      <div class="q-progress">Question ${state.qIdx + 1} of ${total}</div>
+    </div>
+    ${scenarioHtml}
+    <div class="q-stem">${mdInline(q.stem)}</div>
+    <div class="choices">${choicesHtml}</div>
+    ${feedbackHtml}
+    <div class="button-row">
+      <button class="btn secondary" id="quit-btn" type="button">Quit to Home</button>
+      <span class="kbd-hint">Keys: A&ndash;D or 1&ndash;4 to select &middot; Enter to ${state.submitted ? "continue" : "submit"}</span>
+      <button class="btn" id="primary-btn" type="button" ${primaryDisabled ? "disabled" : ""}>${primaryLabel}</button>
+    </div>
+  `;
+
+  document.querySelectorAll(".choice").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (state.submitted) return;
+      state.selectedDisplayIdx = parseInt(btn.dataset.idx, 10);
+      renderQuestion();
+    });
+  });
+  document.getElementById("primary-btn").addEventListener("click", onPrimary);
+  document.getElementById("quit-btn").addEventListener("click", () => {
+    if (confirm("Quit this examination and return to the home page? Your current progress in this attempt will be discarded.")) {
+      stopTimer();
+      state.view = "home";
+      render();
+    }
+  });
+  tickTimers();
+}
+
+function onPrimary() {
+  if (!state.submitted) {
+    if (state.selectedDisplayIdx < 0) return;
+    submitAnswer();
+  } else {
+    nextQuestion();
+  }
+}
+
+function submitAnswer() {
+  const item = state.questions[state.qIdx];
+  const q = item.ref;
+  const chosenOrig = item.displayOrder[state.selectedDisplayIdx];
+  const isCorrect = chosenOrig === q.answer;
+  state.answers.push({
+    sectionQNum: q.n,
+    chosenOrigLetter: chosenOrig,
+    chosenDisplayIdx: state.selectedDisplayIdx,
+    correctOrigLetter: q.answer,
+    isCorrect,
+    ref: q,
+    displayOrder: item.displayOrder,
+  });
+  state.submitted = true;
+  state.questionFrozenMs = Date.now() - state.questionStart;
+  renderQuestion();
+}
+
+function nextQuestion() {
+  if (state.qIdx === state.questions.length - 1) {
+    finishSection();
+    return;
+  }
+  state.qIdx++;
+  state.submitted = false;
+  state.selectedDisplayIdx = -1;
+  state.questionStart = Date.now();
+  state.questionFrozenMs = 0;
+  renderQuestion();
+}
+
+function finishSection() {
+  const sec = ALL_QUESTIONS.sections[state.sectionIdx];
+  const score = state.answers.filter(a => a.isCorrect).length;
+  saveProgress(sec.id, score, state.questions.length);
+  stopTimer();
+  state.view = "results";
+  render();
+}
+
+// =================== RESULTS ===================
+function renderResults() {
+  const sec = ALL_QUESTIONS.sections[state.sectionIdx];
+  const total = state.questions.length;
+  const score = state.answers.filter(a => a.isCorrect).length;
+  const pct = Math.round((score / total) * 100);
+  const passThresh = sec.type === "fullExam" ? FULL_EXAM_PASS : Math.ceil(total * PASS_THRESHOLD);
+  const passed = score >= passThresh;
+
+  const labels = ["A", "B", "C", "D"];
+  const items = state.answers.map((a) => {
+    const q = a.ref;
+    const correctDisplayIdx = a.displayOrder.indexOf(a.correctOrigLetter);
+    const correctText = q.choices[a.correctOrigLetter];
+    const chosenText = a.chosenOrigLetter ? q.choices[a.chosenOrigLetter] : "(skipped)";
+    const markerCls = a.isCorrect ? "correct" : "incorrect";
+    const markerLbl = a.isCorrect ? "Correct" : "Incorrect";
+    return `
+      <div class="review-item">
+        <div class="review-head">
+          <span class="review-q-num">Question ${q.n}</span>
+          <span class="review-marker ${markerCls}">${markerLbl}</span>
+        </div>
+        <div class="review-body">
+          <p class="review-stem">${mdInline(q.stem)}</p>
+          ${a.isCorrect ? "" : `<p class="review-line"><span class="label">Your answer:</span> ${labels[a.chosenDisplayIdx]}) ${mdInline(chosenText)}</p>`}
+          <p class="review-line"><span class="label">Correct answer:</span> ${labels[correctDisplayIdx]}) ${mdInline(correctText)}</p>
+          <div class="review-rationale">${mdInline(q.rationale)}</div>
+        </div>
+      </div>`;
+  }).join("");
+
+  document.getElementById("root").innerHTML = `
+    <header class="brand">
+      <p class="brand-title">Examination Results</p>
+      <h1 class="brand-sub">${esc(sec.title)}</h1>
+      <p class="brand-meta">By <span class="author">${esc(APP_AUTHOR)}</span><span class="sep">&middot;</span>Version ${esc(APP_VERSION)}</p>
+    </header>
+    <div class="result-summary">
+      <p class="result-score">${score}<span class="total"> / ${total}</span></p>
+      <p class="result-pct">${pct}% &middot; Passing score: ${passThresh}/${total}</p>
+      <p class="result-status ${passed ? "pass" : "fail"}">${passed ? "PASS" : "DID NOT PASS"}</p>
+    </div>
+    <h2>Review</h2>
+    <div class="review-list">${items}</div>
+    <div class="button-row">
+      <button class="btn secondary" id="home-btn" type="button">Return to Home</button>
+      <span></span>
+      <button class="btn" id="retake-btn" type="button">Retake This Exam</button>
+    </div>
+  `;
+
+  document.getElementById("home-btn").addEventListener("click", () => {
+    state.view = "home";
+    render();
+  });
+  document.getElementById("retake-btn").addEventListener("click", () => {
+    startSection(state.sectionIdx);
+  });
+}
+
+// =================== ROUTER ===================
+function render() {
+  if (state.view === "home") renderHome();
+  else if (state.view === "question") renderQuestion();
+  else if (state.view === "results") renderResults();
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+// =================== KEYBOARD ===================
+document.addEventListener("keydown", (e) => {
+  if (state.view !== "question") {
+    if (state.view === "results" && e.key === "Enter") {
+      state.view = "home";
+      render();
+    }
+    return;
+  }
+  const target = e.target;
+  if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
+
+  const keyMap = { "1": 0, "2": 1, "3": 2, "4": 3, "a": 0, "b": 1, "c": 2, "d": 3 };
+  const idx = keyMap[e.key.toLowerCase()];
+  if (idx !== undefined && !state.submitted) {
+    const item = state.questions[state.qIdx];
+    if (idx < item.displayOrder.length) {
+      state.selectedDisplayIdx = idx;
+      renderQuestion();
+      e.preventDefault();
+    }
+  } else if (e.key === "Enter") {
+    if (state.submitted || state.selectedDisplayIdx >= 0) {
+      onPrimary();
+      e.preventDefault();
+    }
+  }
+});
+
+// =================== INIT ===================
+if (typeof ALL_QUESTIONS === "undefined") {
+  document.getElementById("root").innerHTML = `
+    <header class="brand"><p class="brand-title">Error</p><h1 class="brand-sub">Questions data not loaded</h1></header>
+    <p>The file <code>questions.js</code> could not be loaded. Generate it by running:</p>
+    <p><code>python practice-tests/pdf/v2/_build_questions_json.py</code></p>`;
+} else {
+  render();
+}
+</script>
+
+</body>
+</html>
