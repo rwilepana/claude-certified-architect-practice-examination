@@ -401,12 +401,18 @@ function shuffle(arr) {
   return a;
 }
 
+function preserveOrder() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("order") === "true";
+}
+
 function prepareSession(section) {
+  const keepOrder = preserveOrder();
   const baseQs = section.questions.slice();
-  const ordered = shuffle(baseQs);
+  const ordered = keepOrder ? baseQs : shuffle(baseQs);
   return ordered.map(q => {
     const letters = ["A", "B", "C", "D"].filter(L => q.choices[L] !== undefined);
-    const displayOrder = shuffle(letters);
+    const displayOrder = keepOrder ? letters : shuffle(letters);
     return { ref: q, displayOrder };
   });
 }
