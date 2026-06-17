@@ -335,11 +335,12 @@ const PASS_THRESHOLD = 0.7;       // tests: 7/10
 const FULL_EXAM_PASS = 36;        // 36/50 = 720/1000 per full-exam-01.md
 const SECONDS_PER_QUESTION = 90;  // 60 Q / 90 min == 1.5 min/Q
 const APP_AUTHOR = "Wilepana, Ronnachai";
-const APP_VERSION = "2026-06-04";
+const APP_VERSION = "2026-06-17";
 
 const state = {
   view: "home",
   sectionIdx: -1,
+  scenarioIdx: -1,
   questions: [],
   qIdx: 0,
   answers: [],
@@ -406,9 +407,13 @@ function preserveOrder() {
   return params.get("order") === "true";
 }
 
-function prepareSession(section) {
+function prepareSession(section, scenarioIdx) {
   const keepOrder = preserveOrder();
-  const baseQs = section.questions.slice();
+  let baseQs = section.questions.slice();
+  if (scenarioIdx >= 0 && section.scenarios && section.scenarios[scenarioIdx]) {
+    const nums = section.scenarios[scenarioIdx].questionNums;
+    baseQs = baseQs.filter(q => nums.includes(q.n));
+  }
   const ordered = keepOrder ? baseQs : shuffle(baseQs);
   return ordered.map(q => {
     const letters = ["A", "B", "C", "D"].filter(L => q.choices[L] !== undefined);
@@ -441,7 +446,7 @@ function tickTimers() {
   const elW = document.getElementById("stat-wrong");
 
   const now = Date.now();
-  const sessionBudget = sec.questions.length * SECONDS_PER_QUESTION;
+  const sessionBudget = state.questions.length * SECONDS_PER_QUESTION;
   const sessionRemaining = sessionBudget - Math.floor((now - state.sessionStart) / 1000);
 
   const qElapsedMs = state.submitted ? state.questionFrozenMs : (now - state.questionStart);
@@ -469,6 +474,34 @@ function stopTimer() {
 function showAllSections() {
   const params = new URLSearchParams(window.location.search);
   return params.get("full") === "true";
+}
+
+function useSelection() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("selection") === "true";
+}
+
+// Sections that support manual scenario pre-selection via ?selection=true
+const SELECTION_SECTION_ID = "full-exam-01";
+
+function sectionSupportsSelection(sec) {
+  return sec.id === SELECTION_SECTION_ID && Array.isArray(sec.scenarios) && sec.scenarios.length > 0;
+}
+
+function scenarioProgressId(sec, scenarioIdx) {
+  return sec.id + "::s" + scenarioIdx;
+}
+
+function activeScenario() {
+  if (state.scenarioIdx < 0) return null;
+  const sec = ALL_QUESTIONS.sections[state.sectionIdx];
+  return sec && sec.scenarios ? sec.scenarios[state.scenarioIdx] : null;
+}
+
+function sessionTitle() {
+  const sc = activeScenario();
+  if (sc) return sc.title;
+  return ALL_QUESTIONS.sections[state.sectionIdx].title;
 }
 
 function renderHome() {
@@ -518,10 +551,26 @@ function renderHome() {
 
 // =================== START SECTION ===================
 function startSection(idx) {
+  const sec = ALL_QUESTIONS.sections[idx];
+  // When ?selection=true and this section supports it, show the scenario
+  // pre-selection screen first instead of starting immediately.
+  if (useSelection() && sectionSupportsSelection(sec)) {
+    state.view = "scenario";
+    state.sectionIdx = idx;
+    state.scenarioIdx = -1;
+    stopTimer();
+    render();
+    return;
+  }
+  beginSection(idx, -1);
+}
+
+function beginSection(idx, scenarioIdx) {
   state.view = "question";
   state.sectionIdx = idx;
+  state.scenarioIdx = scenarioIdx;
   const sec = ALL_QUESTIONS.sections[idx];
-  state.questions = prepareSession(sec);
+  state.questions = prepareSession(sec, scenarioIdx);
   state.qIdx = 0;
   state.answers = [];
   state.submitted = false;
@@ -533,6 +582,48 @@ function startSection(idx) {
   stopTimer();
   state.timerHandle = setInterval(tickTimers, 1000);
   render();
+}
+
+// =================== SCENARIO PRE-SELECTION ===================
+function renderScenarioSelect() {
+  const sec = ALL_QUESTIONS.sections[state.sectionIdx];
+  const progress = loadProgress();
+
+  const rows = sec.scenarios.map((sc, i) => {
+    const count = sec.questions.filter(q => sc.questionNums.includes(q.n)).length;
+    const stored = progress.sections[scenarioProgressId(sec, i)];
+    const meta = stored
+      ? `<span class="best">Best: ${stored.bestScore}/${count}</span><span>${stored.attempts} attempt${stored.attempts === 1 ? "" : "s"}</span>`
+      : `<span>${count} questions</span>`;
+    return `
+      <li class="section-row" data-sidx="${i}">
+        <div class="section-num">${i + 1}</div>
+        <div class="section-info">
+          <p class="section-title">${esc(sc.title)}</p>
+          <p class="section-domain">${esc(sec.title)}</p>
+        </div>
+        <div class="section-meta">${meta}</div>
+      </li>`;
+  }).join("");
+
+  document.getElementById("root").innerHTML = `
+    <header class="brand">
+      <p class="brand-title">Claude Certified Architect &mdash; Foundations</p>
+      <h1 class="brand-sub">${esc(sec.title)}</h1>
+      <p class="brand-meta">By <span class="author">${esc(APP_AUTHOR)}</span><span class="sep">&middot;</span>Version ${esc(APP_VERSION)}</p>
+    </header>
+    <p class="intro">Choose one scenario to practice. Each scenario is a focused group of questions drawn from the Full Practice Exam.</p>
+    <ul class="section-list">${rows}</ul>
+    <p class="home-footer"><a id="back-link">&larr; Back to Home</a></p>
+  `;
+
+  document.querySelectorAll(".section-row").forEach(row => {
+    row.addEventListener("click", () => beginSection(state.sectionIdx, parseInt(row.dataset.sidx, 10)));
+  });
+  document.getElementById("back-link").addEventListener("click", () => {
+    state.view = "home";
+    render();
+  });
 }
 
 // =================== QUESTION VIEW ===================
@@ -597,7 +688,7 @@ function renderQuestion() {
       <div class="stat wrong"><span class="stat-label">Wrong</span><span class="stat-value" id="stat-wrong">0</span></div>
     </div>
     <div class="q-header">
-      <div class="q-section-name">${esc(sec.title)}</div>
+      <div class="q-section-name">${esc(sessionTitle())}</div>
       <div class="q-progress">Question ${state.qIdx + 1} of ${total}</div>
     </div>
     ${scenarioHtml}
@@ -673,7 +764,8 @@ function nextQuestion() {
 function finishSection() {
   const sec = ALL_QUESTIONS.sections[state.sectionIdx];
   const score = state.answers.filter(a => a.isCorrect).length;
-  saveProgress(sec.id, score, state.questions.length);
+  const saveId = state.scenarioIdx >= 0 ? scenarioProgressId(sec, state.scenarioIdx) : sec.id;
+  saveProgress(saveId, score, state.questions.length);
   stopTimer();
   state.view = "results";
   render();
@@ -685,7 +777,8 @@ function renderResults() {
   const total = state.questions.length;
   const score = state.answers.filter(a => a.isCorrect).length;
   const pct = Math.round((score / total) * 100);
-  const passThresh = sec.type === "fullExam" ? FULL_EXAM_PASS : Math.ceil(total * PASS_THRESHOLD);
+  const isScenario = state.scenarioIdx >= 0;
+  const passThresh = (sec.type === "fullExam" && !isScenario) ? FULL_EXAM_PASS : Math.ceil(total * PASS_THRESHOLD);
   const passed = score >= passThresh;
 
   const labels = ["A", "B", "C", "D"];
@@ -714,7 +807,7 @@ function renderResults() {
   document.getElementById("root").innerHTML = `
     <header class="brand">
       <p class="brand-title">Examination Results</p>
-      <h1 class="brand-sub">${esc(sec.title)}</h1>
+      <h1 class="brand-sub">${esc(sessionTitle())}</h1>
       <p class="brand-meta">By <span class="author">${esc(APP_AUTHOR)}</span><span class="sep">&middot;</span>Version ${esc(APP_VERSION)}</p>
     </header>
     <div class="result-summary">
@@ -736,13 +829,14 @@ function renderResults() {
     render();
   });
   document.getElementById("retake-btn").addEventListener("click", () => {
-    startSection(state.sectionIdx);
+    beginSection(state.sectionIdx, state.scenarioIdx);
   });
 }
 
 // =================== ROUTER ===================
 function render() {
   if (state.view === "home") renderHome();
+  else if (state.view === "scenario") renderScenarioSelect();
   else if (state.view === "question") renderQuestion();
   else if (state.view === "results") renderResults();
   window.scrollTo({ top: 0, behavior: "instant" });
